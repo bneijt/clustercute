@@ -4,7 +4,8 @@ It's cute, but it's wrong
 -------------------------
 
 Simple password based execute on multiple SSH hosts.
-If you need this, you know you should have opted for something like Salt, Chef Puppet, or the likes.
+If you need this, you know you should have opted for something like [Salt](https://github.com/saltstack), Chef, Puppet, or the likes.
+
 However, it was still fun to write, so there you go.
 
     clustercute <file with hosts and commands>
