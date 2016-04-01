@@ -1,14 +1,14 @@
 name:                clustercute
 version:             0.1.0.0
-synopsis:            Initial project template from stack
+synopsis:            Simple SSH password based executor
 description:         Please see README.md
 homepage:            http://github.com/bneijt/clustercute#readme
-license:             BSD3
+license:             GPL3
 license-file:        LICENSE
 author:              Bram Neijt
 maintainer:          bneijt@gmail.com
 copyright:           GPL3
-category:            Web
+category:            System Tools
 build-type:          Simple
 -- extra-source-files:
 cabal-version:       >=1.10
