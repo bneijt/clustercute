@@ -37,14 +37,13 @@ getLineWithPrompt prompt = do
     getLine
 
 
-readTargetLine :: String -> IO(Target)
-readTargetLine line = do
-    return $ Target host (drop (length host) line)
+readTargetLine :: String -> IO Target
+readTargetLine line = return $ Target host (drop (length host) line)
     where
         host = head $ words line
 
 
-loadTargetsFrom :: FilePath -> IO([Target])
+loadTargetsFrom :: FilePath -> IO [Target]
 loadTargetsFrom path = do
     content <- readFile path
     mapM readTargetLine (lines content)
@@ -63,22 +62,21 @@ closeEnvironment = do
     exit
     stopGlobalPool
 
-runOnTargets :: String -> String -> [Target] -> IO()
+runOnTargets :: String -> String -> [Target] -> IO ()
 runOnTargets username password targets = do
     openEnvironment
     parallel_ $ map (executeOnTarget username password) targets
     closeEnvironment
 
-executeOnTarget :: String -> String -> Target -> IO()
+executeOnTarget :: String -> String -> Target -> IO ()
 executeOnTarget username password target = do
-    print target
     (status, outputs) <- withSSH2User "/dev/null" username password host 22 (\session -> execCommands session [targetCommand target])
-    mapM_ (\output -> infoM "out" (host ++ ": " ++ (show output))) outputs
-    infoM "exit" (host ++ " with " ++ (show status))
+    mapM_ (\output -> infoM "out" (host ++ ": " ++ show output)) outputs
+    infoM "exit" (host ++ " with " ++ show status)
     infoM "progress" ("Done " ++ host)
     return ()
     where
-        host = (targetAddress target)
+        host = targetAddress target
 
 
 runTargets :: String -> IO ()
@@ -90,5 +88,4 @@ runTargets targetFilePath = do
         then do
             targets <- loadTargetsFrom targetFilePath
             runOnTargets username password targets
-        else do
-            die "Different passwords given, exiting"
+        else die "Different passwords given, exiting"
