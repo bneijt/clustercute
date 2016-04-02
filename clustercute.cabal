@@ -3,16 +3,16 @@ version:             0.1.0.0
 synopsis:            Simple SSH password based executor
 description:         Please see README.md
 homepage:            http://github.com/bneijt/clustercute#readme
-license:             GPL3
+license:             GPL-3
 license-file:        LICENSE
 author:              Bram Neijt
 maintainer:          bneijt@gmail.com
-copyright:           GPL3
+copyright:           GPL-3
 category:            System Tools
 build-type:          Simple
 -- extra-source-files:
 cabal-version:       >=1.10
-
+--https://github.com/commercialhaskell/stack/issues/614
 library
     hs-source-dirs:     src
     exposed-modules:    Lib
@@ -20,12 +20,13 @@ library
                       , libssh2
                       , parallel-io
                       , hslogger
+    ghc-options:       -fPIC -fllvm
     default-language:   Haskell2010
 
 executable clustercute-exe
   hs-source-dirs:      app
   main-is:             Main.hs
-  ghc-options:          -threaded -rtsopts -with-rtsopts=-N -static
+  ghc-options:          -threaded -rtsopts -with-rtsopts=-N -fllvm
   build-depends:        base
                         , clustercute
                         , optparse-applicative
@@ -37,7 +38,7 @@ test-suite clustercute-test
   main-is:             Spec.hs
   build-depends:       base
                      , clustercute
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -fllvm
   default-language:    Haskell2010
 
 source-repository head

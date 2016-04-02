@@ -8,9 +8,17 @@ branches:
 
 sudo: false
 
-cache:
-  directories:
-    - $HOME/.stack/
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - libssh2-1-dev
+    - gcc-4.8
+
+# cache:
+#   directories:
+#     - $HOME/.stack/
 
 before_install:
   - mkdir -p ~/.local/bin
@@ -23,5 +31,5 @@ install:
   - stack build --only-snapshot
 
 script:
+  - stack clean
   - stack build --test
-
