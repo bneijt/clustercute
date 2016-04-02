@@ -1,22 +1,22 @@
 module Main where
 
 import Lib
-import Control.Applicative
-import Options
+import Options.Applicative
 
-data MainOptions = MainOptions
-    {
-    -- optMessage :: String
-    }
+data ClusterCuteOptions = ClusterCuteOptions
+  { hostFilePath :: FilePath }
 
-instance Options MainOptions where
-    defineOptions = pure MainOptions
-        -- <*> simpleOption "dry-run" "Do nothing, just print"
-        -- "Something else"
+clusterCuteOptions :: Parser ClusterCuteOptions
+clusterCuteOptions = ClusterCuteOptions
+     <$> argument str (metavar "HOST-COMMAND-FILE")
 
-
-mainWithOptions :: MainOptions -> [String] -> IO()
-mainWithOptions opts targetFiles = runWithHosts (head targetFiles)
+mainWithOptions :: ClusterCuteOptions -> IO ()
+mainWithOptions (ClusterCuteOptions hostFilePath) = runTargets hostFilePath
 
 main :: IO ()
-main = runCommand mainWithOptions
+main = execParser opts >>= mainWithOptions
+  where
+    opts = info (helper <*> clusterCuteOptions)
+      ( fullDesc
+     <> progDesc "SSH into hosts metioned in HOST-COMMAND-FILE"
+     <> header "Clustercute - Simple SSH client command executor based on password logins" )

@@ -1,5 +1,5 @@
 module Lib
-    ( runWithHosts
+    ( runTargets
     ) where
 
 import System.IO
@@ -81,8 +81,8 @@ executeOnTarget username password target = do
         host = (targetAddress target)
 
 
-runWithHosts :: String -> IO ()
-runWithHosts targetFilePath = do
+runTargets :: String -> IO ()
+runTargets targetFilePath = do
     username <- getLineWithPrompt "Username: "
     password <- getPassword "Password (first time): "
     passwordVerify <- getPassword "Password (second time): "
