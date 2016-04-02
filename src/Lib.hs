@@ -11,7 +11,7 @@ import System.Log.Logger (infoM, Priority (INFO, DEBUG), setLevel, updateGlobalL
 import System.Log.Handler.Simple (fileHandler)
 import System.Log.Handler (setFormatter)
 import System.Log.Formatter (simpleLogFormatter)
-
+import Control.Exception (catch, SomeException)
 
 --    Target = host command
 data Target = Target {
@@ -70,13 +70,17 @@ runOnTargets username password targets = do
 
 executeOnTarget :: String -> String -> Target -> IO ()
 executeOnTarget username password target = do
-    (status, outputs) <- withSSH2User "/dev/null" username password host 22 (\session -> execCommands session [targetCommand target])
-    mapM_ (\output -> infoM "out" (host ++ ": " ++ show output)) outputs
-    infoM "exit" (host ++ " with " ++ show status)
-    infoM "progress" ("Done " ++ host)
+    infoM "progress" ("start " ++ host)
+
+    catch remoteOperation (\e -> infoM "exit" (host ++ " failed " ++ show (e :: SomeException)))
+    infoM "progress" ("finish " ++ host)
     return ()
     where
         host = targetAddress target
+        remoteOperation = do
+            (status, outputs) <- withSSH2User "/dev/null" username password host 22 (\session -> execCommands session [targetCommand target])
+            mapM_ (\output -> infoM "out" (host ++ ": " ++ show output)) outputs
+            infoM "exit" (host ++ " with " ++ show status)
 
 
 runTargets :: String -> IO ()
