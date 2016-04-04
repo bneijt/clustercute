@@ -7,8 +7,8 @@ import System.Exit (die)
 import Network.SSH.Client.LibSSH2
 import Network.SSH.Client.LibSSH2.Foreign (initialize, exit)
 import Control.Concurrent.ParallelIO.Global
-import System.Log.Logger (infoM, Priority (INFO, DEBUG), setLevel, updateGlobalLogger, addHandler)
-import System.Log.Handler.Simple (fileHandler)
+import System.Log.Logger (infoM, Priority (INFO, DEBUG), setLevel, updateGlobalLogger, addHandler, rootLoggerName, removeHandler)
+import System.Log.Handler.Simple (fileHandler, streamHandler)
 import System.Log.Handler (setFormatter)
 import System.Log.Formatter (simpleLogFormatter)
 import Control.Exception (catch, SomeException)
@@ -51,11 +51,15 @@ loadTargetsFrom path = do
 openEnvironment :: IO()
 openEnvironment = do
     initialize True
+    updateGlobalLogger rootLoggerName removeHandler
     h' <- fileHandler "clustercute.log" DEBUG
     let h = setFormatter h' (simpleLogFormatter "$time $loggername: $msg")
     updateGlobalLogger "out" (addHandler h . setLevel INFO)
     updateGlobalLogger "exit" (addHandler h . setLevel INFO)
-    updateGlobalLogger "progress" (setLevel INFO)
+
+    ph' <- streamHandler stdout DEBUG
+    let ph = setFormatter ph' (simpleLogFormatter "$time $msg")
+    updateGlobalLogger "progress" (addHandler ph . setLevel INFO)
 
 closeEnvironment :: IO()
 closeEnvironment = do
@@ -71,7 +75,6 @@ runOnTargets username password targets = do
 executeOnTarget :: String -> String -> Target -> IO ()
 executeOnTarget username password target = do
     infoM "progress" ("start " ++ host)
-
     catch remoteOperation (\e -> infoM "exit" (host ++ " failed " ++ show (e :: SomeException)))
     infoM "progress" ("finish " ++ host)
     return ()
