@@ -1,14 +1,11 @@
 # http://docs.haskellstack.org/en/stable/travis_ci.html
+sudo: false
 
 language: c
 
 branches:
   only:
     - master
-
-sudo: false
-
-
 
 addons:
   apt:
@@ -29,10 +26,11 @@ install:
     - travis_retry cabal update
     - cabal install happy alex
     - cabal install c2hs
-    - cabal install --only-dependencies --enable-tests --enable-benchmarks --ghc-option=-fPIC --ld-option=-fPIC
+    - cabal install --only-dependencies --enable-tests --enable-benchmarks --ghc-option=-fPIC --ld-option=-fPIC --verbose=3
 
 # usr/bin/ld: dist/build/Lib.dyn_o: relocation R_X86_64_PC32 against symbol `clustzu0jncSmxjgJ2Iv3RvFVa1lM_Lib_Target_con_info' can not be used when making a shared object; recompile with -fPIC
 # http://stackoverflow.com/questions/19768267/relocation-r-x86-64-32s-against-linking-error
+# https://tecnocode.co.uk/2014/10/01/dynamic-relocs-runtime-overflows-and-fpic/
 script:
     - cabal configure --enable-tests --enable-benchmarks -v2 --ghc-option=-fPIC --ld-option=-fPIC
-    - cabal build --ghc-option=-fPIC --ld-option=-fPIC
+    - cabal build --ghc-option=-fPIC --ld-option=-fPIC --verbose=3
